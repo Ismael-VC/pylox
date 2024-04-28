@@ -5,11 +5,15 @@
 import sys
 from sys import argv
 from typing import List
+from pprint import pprint
+
+from pylox.lox_token import Token
+from pylox.lox_token_type import TokenType
+from pylox.lox_scanner import Scanner
 
 
 class Lox:
     "lox.Lox"
-
     def __init__(self, args: List[str]):
         self.args = args
         self.had_error = False
@@ -27,7 +31,8 @@ class Lox:
     def run_file(self, path: str) -> str:
         "lox.Lox.run_file"
         with open(path, encoding="utf8") as file:
-            return file.read()
+            tokens = Scanner(self, file.read()).scan_tokens()
+            pprint(tokens)
 
     def run_prompt(self) -> None:
         "lox.Lox.run_prompt"
@@ -46,19 +51,19 @@ class Lox:
 
     def run(self, source: str) -> None:
         "lox.Lox.run"
-        tokens = source.split(" ")
-        print(tokens)
+        tokens = Scanner(self, source).scan_tokens()
+        pprint(tokens)
         if self.had_error:
             sys.exit(65)
 
-    def report(self, line: int, where: str, message: str) -> None:
+    def _report(self, line: int, where: str, message: str) -> None:
         "lox.Lox.report"
         print(f"[line {line}] Error {where}: {message}")
         self.had_error = True
 
-def error(line: int, message: str) -> None:
-    "lox.error"
-    self.report(line, "", message)
+    def error(self, line: int, message: str) -> None:
+        "lox.error"
+        self._report(line, "", message)
 
 if __name__ == "__main__":
     lox = Lox(argv)
